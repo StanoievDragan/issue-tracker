@@ -1,11 +1,13 @@
 import {notFound} from "next/navigation";
 import prisma from "@/prisma/client";
-import {Box, Button, Card, Flex, Grid, Heading, Text} from "@radix-ui/themes";
-import IssueStatusBadge from "@/app/components/IssueStatusBadge";
-import ReactMarkDown from 'react-markdown';
+import {Box, Flex, Grid} from "@radix-ui/themes";
 import delay from "delay";
-import {Pencil2Icon} from "@radix-ui/react-icons";
-import Link from "next/link";
+import EditIssueButton from "@/app/issues/[id]/EditIssueButton";
+import IssueDetails from "@/app/issues/[id]/IssueDetails";
+import DeleteIssueButton from "@/app/issues/[id]/DeleteIssueButton";
+import {getServerSession} from "next-auth";
+import authOptions from "@/app/api/auth/authOptions";
+import AssigneeSelect from "@/app/issues/[id]/AssigneeSelect";
 
 
 interface Props {
@@ -13,6 +15,8 @@ interface Props {
 }
 
 const IssueDetailPage = async ({params}: Props) => {
+    const session = await getServerSession(authOptions)
+
     if (isNaN(parseInt(params.id))) notFound();
 
 
@@ -23,26 +27,22 @@ const IssueDetailPage = async ({params}: Props) => {
     if (!issue)
         notFound();
 
-    await delay(2000)
+
 
     return (
-        <Grid columns={{initial: '1', md: '2'}} gap={'5'}>
-            <Box>
-            <Heading>{issue.title}</Heading>
-            <Flex className={'gap-3'} my={"2"}>
-                <IssueStatusBadge status={issue.status}/>
-                <Text>{issue.createdAt.toDateString()}</Text>
-            </Flex>
-            <Card className={'prose mt-4'}>
-                <ReactMarkDown>{issue.description}</ReactMarkDown>
-            </Card>
+        <Grid columns={{initial: '1', md: '5'}} gap={'5'}>
+            <Box className={'md:col-span-4'}>
+                <IssueDetails issue={issue}></IssueDetails>
             </Box>
-            <Box>
-                <Button>
-                    <Pencil2Icon></Pencil2Icon>
-                    <Link href={`/issues/${issue.id}/edit`}>Edit Issue</Link>
-                </Button>
+            {session && (
+                <Box>
+                <Flex direction={'column'} gap={'4'}>
+                    <AssigneeSelect issue={issue}></AssigneeSelect>
+                    <EditIssueButton issueId={issue.id}></EditIssueButton>
+                    <DeleteIssueButton issueId={issue.id}></DeleteIssueButton>
+                </Flex>
             </Box>
+            )}
         </Grid>
     );
 };
