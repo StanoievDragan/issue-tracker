@@ -16,6 +16,12 @@ const IssueChart = ({open, inProgress, closed}: Props) => {
         {label: "Closed", value: closed},
     ]
 
+    const error = console.error; // temporary solution for default props
+    console.error = (...args: any) => {
+        if (/defaultProps/.test(args[0])) return;
+        error(...args);
+    };
+
     return (
         <Card>
             <ResponsiveContainer width={"100%"} height={300}>

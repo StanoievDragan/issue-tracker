@@ -1,12 +1,12 @@
 import '@radix-ui/themes/styles.css';
-import './theme-config.css';
 import type {Metadata} from "next";
 import {Inter} from "next/font/google";
 import "./globals.css";
-import {Container, Theme, ThemePanel} from '@radix-ui/themes';
+import {Container, Theme} from '@radix-ui/themes';
 import NavBar from "@/app/NavBar";
 import AuthProvider from "@/app/auth/Provider";
 import QueryClientProvider from "@/app/QueryClientProvider";
+import React from "react";
 
 const inter = Inter({
     subsets: ["latin"],
@@ -25,7 +25,7 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
-        <body className={inter.variable}>
+        <body className={`${inter.variable} bg-slate-400`}>
         <QueryClientProvider>
         <AuthProvider>
         <Theme appearance="light" accentColor="purple">
